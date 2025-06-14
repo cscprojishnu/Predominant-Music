@@ -1,0 +1,89 @@
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras import layers, models
+from sklearn.metrics import classification_report, confusion_matrix
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+# Paths to data directories
+train_dir = r"D:\DJT\Downloads\PAPER\PAPER 3\trainingset"
+test_dir = r"D:\DJT\Downloads\PAPER\PAPER 3\testset"
+
+# Image dimensions (assume square images for simplicity)
+IMG_HEIGHT = 128
+IMG_WIDTH = 128
+BATCH_SIZE = 32
+
+# Data generators for training and testing
+train_datagen = ImageDataGenerator(rescale=1.0/255, validation_split=0.2)
+
+test_datagen = ImageDataGenerator(rescale=1.0/255)
+
+# Prepare training and validation datasets
+train_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='training'
+)
+
+validation_generator = train_datagen.flow_from_directory(
+    train_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    subset='validation'
+)
+
+# Prepare testing dataset
+test_generator = test_datagen.flow_from_directory(
+    test_dir,
+    target_size=(IMG_HEIGHT, IMG_WIDTH),
+    batch_size=BATCH_SIZE,
+    class_mode='categorical',
+    shuffle=False
+)
+
+# Define the CNN model
+model = models.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Conv2D(128, (3, 3), activation='relu'),
+    layers.MaxPooling2D((2, 2)),
+    layers.Flatten(),
+    layers.Dense(128, activation='relu'),
+    layers.Dense(len(train_generator.class_indices), activation='softmax')
+])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train the model
+history = model.fit(
+    train_generator,
+    validation_data=validation_generator,
+    epochs=10
+)
+
+# Evaluate the model
+loss, accuracy = model.evaluate(test_generator)
+print(f"Test Accuracy: {accuracy * 100:.2f}%")
+
+# Generate classification report
+test_generator.reset()
+y_pred = np.argmax(model.predict(test_generator), axis=-1)
+y_true = test_generator.classes
+labels = list(test_generator.class_indices.keys())
+
+print("Classification Report:")
+print(classification_report(y_true, y_pred, target_names=labels))
+
+# Save the model
+model.save('/mnt/data/instrument_voice_model.h5')
