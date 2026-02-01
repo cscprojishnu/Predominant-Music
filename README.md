@@ -7,6 +7,10 @@ This repository contains the implementation of our research titled:
 > **Dynamic Feature Learning with Involution and Convolution for Predominant Instrument Recognition in Polyphonic Music**  
 > Published in: *Circuits, Systems, and Signal Processing* (Springer, 2025)  
 > DOI: [10.1007/s00034-025-03111-y](https://doi.org/10.1007/s00034-025-03111-y)
+>
+> **Spatio-Channel Complementary Learning for Polyphonic Music Instrument Recognition**  
+> Published in: *IEEE Xplore* (2026)  
+> DOI: [10.1109/ICITEICS64870.2025.11341086](https://doi.org/10.1109/ICITEICS64870.2025.11341086)
 
 📍 Authors: [C. R. Lekshmi](mailto:cr_lekshmi@cb.amrita.edu), [Jishnu Teja Dandamudi](mailto:djishnuteja2006@gmail.com)  
 🏫 Amrita School of Artificial Intelligence, Amrita Vishwa Vidyapeetham, Coimbatore, India
